@@ -1,0 +1,37 @@
+{
+  "col_delimiter": "\t",
+  "head_start": 0,
+  "charset": "ISO-8859-15",
+  "text_delimiter": "\"",
+  "decimal_sep": ".",
+  "escape_char": "\\",
+  "fields": {
+    "name": {
+      "column": "Name"
+    },
+    "street_address": {
+      "column": "Street_Address"
+    },
+    "citation": {
+      "column": "FR_Citation"
+    }
+  },
+  "tests": {
+    "first": {
+      "name": " ADRIAN MANUEL HERNANDEZ",
+      "street_address": "3037 S. 69TH DRIVE",
+      "citation": "82 F.R. 48792 10/20/2017"
+    },
+    "last": {
+      "name": "ZTE KANGXUN TELECOMMUNICATIONS LTD.",
+      "street_address": "2/3 FLOOR, SUITE A, ZTE COMMUNICATION MANSION KEJI (S) ROAD",
+      "citation": "83 F.R. 17644 4/23/2018"
+    },
+    "line": {
+      "_num": "60",
+      "name": "ALIAKSANDR STASHYNSKI",
+      "street_address": "SENECA COUNTY JAIL, 3040 SOUTH STATE ROUTE 100",
+      "citation": "79 F.R. 14215 3/13/14"
+    }
+  }
+}
