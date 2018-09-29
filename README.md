@@ -186,3 +186,20 @@ In this every time that column "name" has the word "John", the virtual column "e
 
 The exclude parameter accepts regular expressions.
 
+
+### Apply stream filters
+
+         $csv = new \Juanparati\CSVReader\CSVReader('file.csv');
+         $csv->applyStreamFilter('zlib.deflate')
+         
+
+### File information
+
+It is possible to get current pointer position in bytes calling to the "tellPosition" method.
+In order to obtain the file stat a call to the "info" method will return the file stat (See http://php.net/manual/en/function.fstat.php).
+
+        $csv = new \Juanparati\CSVReader\CSVReader('file.csv');
+        echo 'Current byte position ' . $csv->tellPosition() . ' of ' . $csv->info()['size'];
+      
+
+

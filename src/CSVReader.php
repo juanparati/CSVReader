@@ -160,6 +160,15 @@ class CSVReader
 
 
     /**
+     * Destructor.
+     */
+    public function __destruct()
+    {
+        fclose($this->fp);
+    }
+
+
+    /**
      * Set the field mapping (Used with CSV that have header columns).
      *
      * @param array $fields
@@ -382,6 +391,43 @@ class CSVReader
         return false;
     }
 
+
+    /**
+     * Get file pointer position in bytes.
+     *
+     * @see http://php.net/manual/en/function.ftell.php
+     * @return bool|int
+     */
+    public function tellPosition()
+    {
+        return ftell($this->fp);
+    }
+
+
+    /**
+     * Get file information.
+     *
+     * @see http://php.net/manual/en/function.fstat.php
+     * @return array
+     */
+    public function info() : array
+    {
+        return fstat($this->fp);
+    }
+
+
+    /**
+     * Apply stream filter.
+     *
+     * @see http://php.net/manual/en/function.stream-filter-append.php
+     * @param $filter
+     * @param $params
+     * @return resource
+     */
+    public function applyStreamFilter($filter, $params = null)
+    {
+        return stream_filter_append($this->fp, $filter, STREAM_FILTER_READ, $params);
+    }
 
     /**
      * Read CSV line.
