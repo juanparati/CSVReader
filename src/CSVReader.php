@@ -26,6 +26,7 @@ class CSVReader
     const DELIMITER_PIPE      = '|';
     const DELIMITER_TAB       = "\t";
     const DELIMITER_CARET     = '^';
+    const DELIMITER_AMPERSAND = '&';
 
 
     /**
