@@ -74,7 +74,7 @@ CSVReader was developed for business and e-commerce environments where large CSV
         ]);
         
         // Extract rows sequentially
-        while ($row = $csv->readCSVLine())
+        while ($row = $csv->readLine())
         {
             echo 'Name: ' . $row['name'];
             echo 'Price: ' . $row['price'];             
@@ -106,11 +106,11 @@ Separators are set as string or constant representation.
 
 | Separators | Constant |
 |------------|----------|
-| ;          | \Juanparati\CSVReader\DELIMITER_SEMICOLON |
-| ,          | \Juanparati\CSVReader\DELIMITER_COMMA     |
-|            | \Juanparati\CSVReader\DELIMITER_PIPE      |
-| \t         | \Juanparati\CSVReader\DELIMITER_TAB       |
-| ^          | \Juanparati\CSVReader\DELIMITER_CARET     |
+| ;          | \Juanparati\CSVReader\CSVReader::DELIMITER_SEMICOLON |
+| ,          | \Juanparati\CSVReader\CSVReader::DELIMITER_COMMA     |
+|            | \Juanparati\CSVReader\CSVReader::DELIMITER_PIPE      |
+| \t         | \Juanparati\CSVReader\CSVReader::DELIMITER_TAB       |
+| ^          | \Juanparati\CSVReader\CSVReader::DELIMITER_CARET     |
 
 It is possible to use all kind of separators so it is not limited to the enumerated ones.
 
@@ -119,9 +119,9 @@ It is possible to use all kind of separators so it is not limited to the enumera
 
 | Enclosure   | Constant |
 |-------------|----------|
-| ~           | \Juanparati\CSVReader\ENCLOSURE_TILDES |
-| "           | \Juanparati\CSVReader\ENCLOSURE_QUOTES |
-| No enclosure| \Juanparati\CSVReader\ENCLOSURE_NONE   |
+| ~           | \Juanparati\CSVReader\CSVReader::ENCLOSURE_TILDES |
+| "           | \Juanparati\CSVReader\CSVReader::ENCLOSURE_QUOTES |
+| No enclosure| \Juanparati\CSVReader\CSVReader::ENCLOSURE_NONE   |
 
 Enclosure node is used when strings in CSV are not enclosed by any kind of character.
 
@@ -131,10 +131,10 @@ Enclosure node is used when strings in CSV are not enclosed by any kind of chara
 
 | Decimal separator | Constant |
 |-------------------|----------|
-| .           | \Juanparati\CSVReader\DECIMAL_SEP_POINT      |
-| ,           | \Juanparati\CSVReader\DECIMAL_SEP_COMMA      |
-| '           | \Juanparati\CSVReader\DECIMAL_SEP_APOSTROPHE |
-| ⎖           | \Juanparati\CSVReader\DECIMAL_SEP_APOSTROPHE_9995 |
+| .           | \Juanparati\CSVReader\CSVReader::DECIMAL_SEP_POINT      |
+| ,           | \Juanparati\CSVReader\CSVReader::DECIMAL_SEP_COMMA      |
+| '           | \Juanparati\CSVReader\CSVReader::DECIMAL_SEP_APOSTROPHE |
+| ⎖           | \Juanparati\CSVReader\CSVReader::DECIMAL_SEP_APOSTROPHE_9995 |
 
 
 ### Column casting
