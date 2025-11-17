@@ -2,11 +2,8 @@
     "name": "juanparati/csvreader",
     "description": "A light/fast CSV reader suitable for pretty large files.",
     "type": "library",
-    "require-dev": {
-        "phpunit/phpunit": "~7.2.0",
-        "ext-json": "*"
-    },
     "license": "MIT",
+    "tags": ["csv", "reader", "quick", "stream"],
     "authors": [
         {
             "name": "Juan Lago",
@@ -15,8 +12,13 @@
     ],
     "minimum-stability": "stable",
     "require": {
-        "php": ">=7.0.1",
-        "ext-mbstring": "*"
+        "php": "^8.3",
+        "ext-mbstring": "*",
+        "ext-ctype": "*"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^10.0",
+        "ext-json": "*"
     },
     "autoload": {
         "psr-4": {
