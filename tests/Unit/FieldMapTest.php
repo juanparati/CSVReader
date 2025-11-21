@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace Juanparati\CSVReader\Tests\Unit;
+namespace Juanparati\CsvReader\Tests\Unit;
 
-use Juanparati\CSVReader\FieldMaps\CsvFieldAuto;
-use Juanparati\CSVReader\FieldMaps\CsvFieldBool;
-use Juanparati\CSVReader\FieldMaps\CsvFieldDecimal;
-use Juanparati\CSVReader\FieldMaps\CsvFieldInt;
-use Juanparati\CSVReader\FieldMaps\CsvFieldString;
+use Juanparati\CsvReader\FieldMaps\CsvFieldAuto;
+use Juanparati\CsvReader\FieldMaps\CsvFieldBool;
+use Juanparati\CsvReader\FieldMaps\CsvFieldDecimal;
+use Juanparati\CsvReader\FieldMaps\CsvFieldInt;
+use Juanparati\CsvReader\FieldMaps\CsvFieldString;
 use PHPUnit\Framework\TestCase;
 
 class FieldMapTest extends TestCase

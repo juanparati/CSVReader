@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Juanparati\CSVReader\Helpers;
+namespace Juanparati\CsvReader\Helpers;
 
-use Juanparati\CSVReader\CsvReader;
-use Juanparati\CSVReader\Enums\BomType;
+use Juanparati\CsvReader\CsvReader;
+use Juanparati\CsvReader\Enums\BomType;
 
 /**
  * Obtain information about file encoding.

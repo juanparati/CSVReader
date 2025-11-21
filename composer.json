@@ -23,12 +23,12 @@
     },
     "autoload": {
         "psr-4": {
-            "Juanparati\\CSVReader\\": "src/"
+            "Juanparati\\CsvReader\\": "src/"
         }
     },
     "autoload-dev": {
         "psr-4": {
-            "Juanparati\\CSVReader\\Tests\\": "tests/"
+            "Juanparati\\CsvReader\\Tests\\": "tests/"
         }
     },
     "scripts": {

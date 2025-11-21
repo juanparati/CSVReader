@@ -1,8 +1,8 @@
 <?php
 
-namespace Juanparati\CSVReader\Contracts;
+namespace Juanparati\CsvReader\Contracts;
 
-use Juanparati\CSVReader\FieldMaps\CsvFieldAuto;
+use Juanparati\CsvReader\FieldMaps\CsvFieldAuto;
 
 interface CsvFieldMap extends \JsonSerializable
 {

@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Juanparati\CSVReader\Tests;
+namespace Juanparati\CsvReader\Tests;
 
-use Juanparati\CSVReader\CsvReader;
+use Juanparati\CsvReader\CsvReader;
 use PHPUnit\Framework\TestCase;
 
 abstract class CSVTest extends TestCase

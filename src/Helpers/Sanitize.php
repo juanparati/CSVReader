@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
-namespace Juanparati\CSVReader\Helpers;
+namespace Juanparati\CsvReader\Helpers;
 
 /**
  * Class Sanitize.
  *
  * Sanitization helper methods
  *
- * @package Juanparati\CSVReader
+ * @package Juanparati\CsvReader
  */
 class Sanitize
 {

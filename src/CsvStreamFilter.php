@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Juanparati\CSVReader;
+namespace Juanparati\CsvReader;
 
 final class CsvStreamFilter
 {

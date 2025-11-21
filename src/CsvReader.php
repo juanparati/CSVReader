@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace Juanparati\CSVReader;
+namespace Juanparati\CsvReader;
 
-use Juanparati\CSVReader\Contracts\CsvFieldMap;
-use Juanparati\CSVReader\Exceptions\CsvFileException;
-use Juanparati\CSVReader\FieldMaps\CsvFieldAuto;
-use Juanparati\CSVReader\Helpers\EncodingInfo;
+use Juanparati\CsvReader\Contracts\CsvFieldMap;
+use Juanparati\CsvReader\Exceptions\CsvFileException;
+use Juanparati\CsvReader\FieldMaps\CsvFieldAuto;
+use Juanparati\CsvReader\Helpers\EncodingInfo;
 
 /**
  * Class CSVReader.
@@ -37,7 +37,7 @@ class CsvReader
      */
     public const string ENCLOSURE_TILDES = '~';
     public const string ENCLOSURE_QUOTES = '"';
-    public const string ENCLOSURE_NONE = "\010";    // Using backspace as replacement
+    public const string ENCLOSURE_NONE = "\010";    // Using backspace as a replacement
 
 
     /**
@@ -71,13 +71,13 @@ class CsvReader
     /**
      * CSVReader constructor.
      *
-     * @param string $file
-     * @param string $delimiter
-     * @param string $enclosureChar
-     * @param string|null $charset CSV charset encoding (Default auto-detect)
-     * @param string $escapeChar
-     * @param string $excludeField
-     * @param CsvStreamFilter[] $streamFilters
+     * @param string $file Path to the CSV file
+     * @param string $delimiter Column delimiter
+     * @param string $enclosureChar Enclosure character
+     * @param string|null $charset Encoding charset
+     * @param string $escapeChar Escape character
+     * @param string $excludeField Field name used to flag excluded rows
+     * @param array $streamFilters Stream filters
      * @throws CsvFileException
      */
     public function __construct(
@@ -143,7 +143,7 @@ class CsvReader
         // Reset pointer position
         $this->seekLine($headerRow);
 
-        $columns = $this->readCSVLine();
+        $columns = $this->getNextLine();
 
         // Ignore the empty header line
         if (empty($columns)) {
@@ -187,7 +187,7 @@ class CsvReader
     {
         $this->seekLine($headerRow);
 
-        $headers = $this->readCSVLine();
+        $headers = $this->getNextLine();
 
         // Ignore the empty header line
         if (empty($headers)) {
@@ -256,7 +256,7 @@ class CsvReader
      * @param int $headerRow
      * @return array
      */
-    public function read(int $headerRow = 1): array
+    public function readAll(int $headerRow = 1): array
     {
         $this->seekLine($headerRow);
 
@@ -278,7 +278,7 @@ class CsvReader
      *
      * Example usage:
      * ```php
-     * foreach ($csv->readGenerator() as $row) {
+     * foreach ($csv->readMore() as $row) {
      *     // Process row
      * }
      * ```
@@ -287,7 +287,7 @@ class CsvReader
      * @param bool $skipEmpty Skip empty lines (default: true)
      * @return \Generator
      */
-    public function readGenerator(int $headerRow = 1, bool $skipEmpty = true): \Generator
+    public function readMore(int $headerRow = 1, bool $skipEmpty = true): \Generator
     {
         $this->seekLine($headerRow);
 
@@ -309,7 +309,7 @@ class CsvReader
      */
     public function readLine(): array|bool
     {
-        $columns = $this->readCSVLine();
+        $columns = $this->getNextLine();
 
         if (!$columns) {
             return false;
@@ -415,7 +415,7 @@ class CsvReader
      *
      * @return array|false|null
      */
-    protected function readCSVLine(): array|false|null
+    protected function getNextLine(): array|false|null
     {
         return fgetcsv($this->fp, 0, $this->delimiter, $this->enclosureChar, $this->escapeChar);
     }

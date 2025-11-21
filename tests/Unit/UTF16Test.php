@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Juanparati\CSVReader\Tests\Unit;
+namespace Juanparati\CsvReader\Tests\Unit;
 
-use Juanparati\CSVReader\CsvReader;
+use Juanparati\CsvReader\CsvReader;
 use PHPUnit\Framework\TestCase;
 
 class UTF16Test extends TestCase

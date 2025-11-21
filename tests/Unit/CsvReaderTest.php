@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace Juanparati\CSVReader\Tests\Unit;
+namespace Juanparati\CsvReader\Tests\Unit;
 
-use Juanparati\CSVReader\CsvReader;
-use Juanparati\CSVReader\Exceptions\CsvFileException;
-use Juanparati\CSVReader\FieldMaps\CsvFieldAuto;
-use Juanparati\CSVReader\FieldMaps\CsvFieldInt;
-use Juanparati\CSVReader\FieldMaps\CsvFieldString;
+use Juanparati\CsvReader\CsvReader;
+use Juanparati\CsvReader\Exceptions\CsvFileException;
+use Juanparati\CsvReader\FieldMaps\CsvFieldAuto;
+use Juanparati\CsvReader\FieldMaps\CsvFieldInt;
+use Juanparati\CsvReader\FieldMaps\CsvFieldString;
 use PHPUnit\Framework\TestCase;
 
 class CsvReaderTest extends TestCase
@@ -175,7 +175,7 @@ class CsvReaderTest extends TestCase
         $reader = new CsvReader($this->tempFilePath, ',');
         $reader->setAutomaticMapField(0);
 
-        $records = $reader->read(1);
+        $records = $reader->readAll(1);
 
         $this->assertCount(3, $records);
         $this->assertEquals('John', $records[0]['name']);
@@ -190,7 +190,7 @@ class CsvReaderTest extends TestCase
         $reader->setAutomaticMapField(0);
 
         $count = 0;
-        foreach ($reader->readGenerator(1) as $row) {
+        foreach ($reader->readMore(1) as $row) {
             $count++;
             $this->assertIsArray($row);
             $this->assertArrayHasKey('name', $row);
@@ -207,7 +207,7 @@ class CsvReaderTest extends TestCase
         $reader->setAutomaticMapField(0);
 
         $count = 0;
-        foreach ($reader->readGenerator(1, true) as $row) {
+        foreach ($reader->readMore(1, true) as $row) {
             $count++;
         }
 
@@ -222,7 +222,7 @@ class CsvReaderTest extends TestCase
 
         $count = 0;
         $emptyCount = 0;
-        foreach ($reader->readGenerator(1, false) as $row) {
+        foreach ($reader->readMore(1, false) as $row) {
             $count++;
             if ($row === true) {
                 $emptyCount++;

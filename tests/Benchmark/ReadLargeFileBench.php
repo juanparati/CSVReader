@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace Juanparati\CSVReader\Tests\Benchmark;
+namespace Juanparati\CsvReader\Tests\Benchmark;
 
-use Juanparati\CSVReader\CsvReader;
-use Juanparati\CSVReader\FieldMaps\CsvFieldDecimal;
-use Juanparati\CSVReader\FieldMaps\CsvFieldInt;
-use Juanparati\CSVReader\FieldMaps\CsvFieldString;
+use Juanparati\CsvReader\CsvReader;
+use Juanparati\CsvReader\FieldMaps\CsvFieldDecimal;
+use Juanparati\CsvReader\FieldMaps\CsvFieldInt;
+use Juanparati\CsvReader\FieldMaps\CsvFieldString;
 
 class ReadLargeFileBench
 {
@@ -15,15 +15,15 @@ class ReadLargeFileBench
      * Read a simple file.
      *
      * @return void
-     * @throws \Juanparati\CSVReader\Exceptions\CsvFileException
+     * @throws \Juanparati\CsvReader\Exceptions\CsvFileException
      */
     public function benchSimpleReadLargeFile()
     {
-        $reader = (new \Juanparati\CSVReader\CsvReader(
+        $reader = (new \Juanparati\CsvReader\CsvReader(
             file: __DIR__ . '/../tmp/sample.csv',
         ))->setAutomaticMapField();
 
-        foreach ($reader->readGenerator() as $row) {
+        foreach ($reader->readMore() as $row) {
             if (!isset($row['Index'])) {
                 throw new \Exception(sprintf('Index not found in row: %s', json_encode($row)));
             }
@@ -35,11 +35,11 @@ class ReadLargeFileBench
      * Read with custom map
      *
      * @return void
-     * @throws \Juanparati\CSVReader\Exceptions\CsvFileException
+     * @throws \Juanparati\CsvReader\Exceptions\CsvFileException
      */
     public function benchReadLargeFileWithCustomMap()
     {
-        $reader = (new \Juanparati\CSVReader\CsvReader(
+        $reader = (new \Juanparati\CsvReader\CsvReader(
             file: __DIR__ . '/../tmp/sample.csv',
         ))->setMapFields([
             'id' => new CsvFieldInt('Index'),
@@ -48,7 +48,7 @@ class ReadLargeFileBench
             'color' => (new CsvFieldString('Color'))->setExclusionRule(['Olive', 'Brown'])
         ]);
 
-        foreach ($reader->readGenerator() as $row) {
+        foreach ($reader->readMore() as $row) {
             if (!isset($row['Index'])) {
                 throw new \Exception(sprintf('Index not found in row: %s', json_encode($row)));
             }

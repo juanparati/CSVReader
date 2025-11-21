@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Juanparati\CSVReader\Tests\Unit;
+namespace Juanparati\CsvReader\Tests\Unit;
 
-use Juanparati\CSVReader\Enums\BomType;
-use Juanparati\CSVReader\Helpers\EncodingInfo;
+use Juanparati\CsvReader\Enums\BomType;
+use Juanparati\CsvReader\Helpers\EncodingInfo;
 use PHPUnit\Framework\TestCase;
 
 class EncodingInfoTest extends TestCase

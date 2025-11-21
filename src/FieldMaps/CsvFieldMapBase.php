@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Juanparati\CSVReader\FieldMaps;
+namespace Juanparati\CsvReader\FieldMaps;
 
-use Juanparati\CSVReader\Contracts\CsvFieldMap;
+use Juanparati\CsvReader\Contracts\CsvFieldMap;
 
 abstract class CsvFieldMapBase implements CsvFieldMap
 {
@@ -177,7 +177,6 @@ abstract class CsvFieldMapBase implements CsvFieldMap
      */
     public function shouldBeExclude(mixed $value): bool
     {
-
         foreach ($this->exclusions as $exclusion) {
             if (is_callable($exclusion) && ($exclusion($value))) {
                 return true;

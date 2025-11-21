@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Juanparati\CSVReader\Tests\Unit;
+namespace Juanparati\CsvReader\Tests\Unit;
 
-use Juanparati\CSVReader\Enums\BomType;
+use Juanparati\CsvReader\Enums\BomType;
 use PHPUnit\Framework\TestCase;
 
 class BomTypeTest extends TestCase

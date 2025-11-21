@@ -1,6 +1,6 @@
 <?php
 
-namespace Juanparati\CSVReader\FieldMaps;
+namespace Juanparati\CsvReader\FieldMaps;
 
 /**
  * Auto cast fields.

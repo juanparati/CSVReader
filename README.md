@@ -1,7 +1,5 @@
 # CSVReader
 
-## About
-
 CSVReader is a lightweight and fast CSV reader library for PHP that is suitable for large size files.
 
 CSVReader was developed for business and e-commerce environments where large CSV files with possible corrupted data can be ingested.
@@ -19,161 +17,181 @@ CSVReader was developed for business and e-commerce environments where large CSV
 - Currency checking (Avoid misinterpreting corrupted or wrong currency values).
 - Detect and ignore empty lines.
 - Word segment extraction per column value.
-- Word deletion per column. value.
+- Word deletion per column value.
 - Column value replacement.
 - Value exclusion based on regular expression.
 - Full UTF support.
 - BOM support.
-- Lightweight library without external dependencies (Except PHPunit for testing).
+- Lightweight library without external dependencies (Except PHPUnit for testing).
 
 ## Usage
 
-### Custom field map (For CSV with header)
+### Read CSV file and infer column mapping
 
 ```PHP
-$csv = new \Juanparati\CSVReader\CsvReader(
-    file: 'file.csv',     // File path 
-    delimiter: ';',            // Column delimiter
-    enclosureChar: '"',            // Text enclosure
-    charset: 'UTF-8',        // Charset
-    decimalSep: ',',            // Decimal separator
-    escapeChar: '\\'            // Escape character
+/**
+ * Example CSV file:
+ * 
+ * name;price
+ * John;10.50
+ * Mary;20.00
+ * 
+ */
+
+// Create CSVReader instance
+$csv = new \Juanparati\CsvReader\CsvReader(
+    file: 'file.csv',       // File path
+    delimiter: ';',         // Column delimiter (Default semicolon)
+    enclosureChar: '"',     // Text enclosure (Default double quotes)
+    charset: 'UTF-8',       // Charset (Default auto-detect)
+    escapeChar: '\\',       // Escape character (Default backslash)
+    excludeField: 'exclude' // Name of the field used for flagging rows (Default: 'exclude')
+    streamFilters: []       // Stream filters (Default: [])
 );
 
-
-// Define a custom map
-$csv->setMapFields([
-    'name' => ['column' => 'Firstname'],
-    'price' => ['column' => 'Retailprice'],
-],
-    0   // Define where the headline. Default: 0 (first line)
+// Automatic column mapping
+$csv->setAutomaticMapField(
+    0   // Define where the headline starts. Default: 0 (first line)
 );
 
 // Extract rows sequentially
-while ($row = $csv->readCSVLine())
+while ($row = $csv->readMore())
 {
     echo 'Name: ' . $row['name'];
     echo 'Price: ' . $row['price'];             
 }
 ```
 
-### Custom field map (For CSV without header)
-
-```PHP
-$csv = new \Juanparati\CSVReader\CsvReader(
-    file: 'file.csv',     // File path 
-    delimiter: ';'             // Column delimiter
-);
-        
-// Define a custom map
-$csv->setMapFields([
-    'name' => ['column' => 0],
-    'price' => ['column' => 3],
-]);
-
-// Extract rows sequentially
-while ($row = $csv->readLine())
-{
-    echo 'Name: ' . $row['name'];
-    echo 'Price: ' . $row['price'];             
-}
-```        
-
-### Automatic field map
-
-```PHP
-$csv = new \Juanparati\CSVReader\CsvReader(
-    file: 'file.csv',     // File path 
-    delimiter: ';'             // Column delimiter
-);
-       
-// Define a custom map
-$csv->setAutomaticMapField();
-
-// Extract rows sequentially
-while ($row = $csv->readCSVLine())
-{
-    echo 'Firstname: ' . $row['Firstname'];
-    echo 'Retailprice: ' . $row['Retailprice'];             
-}
-```
-
-### Column separators
+#### Column separators
 
 Separators are set as string or constant representation.
 
 | Separators | Constant                                             |
 |------------|------------------------------------------------------|
-| ;          | \Juanparati\CSVReader\CSVReader::DELIMITER_SEMICOLON |
-| ,          | \Juanparati\CSVReader\CSVReader::DELIMITER_COMMA     |
-| \|         | \Juanparati\CSVReader\CSVReader::DELIMITER_PIPE      |
-| \t         | \Juanparati\CSVReader\CSVReader::DELIMITER_TAB       |
-| ^          | \Juanparati\CSVReader\CSVReader::DELIMITER_CARET     |
+| ;          | \Juanparati\CsvReader\CsvReader::DELIMITER_SEMICOLON |
+| ,          | \Juanparati\CsvReader\CsvReader::DELIMITER_COMMA     |
+| \|         | \Juanparati\CsvReader\CsvReader::DELIMITER_PIPE      |
+| \t         | \Juanparati\CsvReader\CsvReader::DELIMITER_TAB       |
+| ^          | \Juanparati\CsvReader\CsvReader::DELIMITER_CARET     |
+| &          | \Juanparati\CsvReader\CsvReader::DELIMITER_AMPERSAND |
 
-It is possible to use all kind of separators so it is not limited to the enumerated ones.
+It's possible to use all kinds of separators, so it is not limited to the enumerated ones.
 
 
-### String enclosures
+#### String enclosures
 
 | Enclosure    | Constant                                          |
 |--------------|---------------------------------------------------|
-| ~            | \Juanparati\CSVReader\CSVReader::ENCLOSURE_TILDES |
-| "            | \Juanparati\CSVReader\CSVReader::ENCLOSURE_QUOTES |
-| No enclosure | \Juanparati\CSVReader\CSVReader::ENCLOSURE_NONE   |
+| ~            | \Juanparati\CsvReader\CsvReader::ENCLOSURE_TILDES |
+| "            | \Juanparati\CsvReader\CsvReader::ENCLOSURE_QUOTES |
+| No enclosure | \Juanparati\CsvReader\CsvReader::ENCLOSURE_NONE   |
 
-Enclosure node is used when strings in CSV are not enclosed by any kind of character.
-
-
-### Decimal separators
+Enclosure none is used when strings in CSV are not enclosed by any kind of character.
 
 
-| Decimal separator | Constant                                                     |
-|-------------------|--------------------------------------------------------------|
-| .                 | \Juanparati\CSVReader\CSVReader::DECIMAL_SEP_POINT           |
-| ,                 | \Juanparati\CSVReader\CSVReader::DECIMAL_SEP_COMMA           |
-| '                 | \Juanparati\CSVReader\CSVReader::DECIMAL_SEP_APOSTROPHE      |
-| ⎖                 | \Juanparati\CSVReader\CSVReader::DECIMAL_SEP_APOSTROPHE_9995 |
-| _                 | \Juanparati\CSVReader\CSVReader::DECIMAL_SEP_UNDERSCORE      |
-| ٫                 | \Juanparati\CSVReader\CSVReader::DECIMAL_SEP_ARABIC          |
-
-### Column casting
-
-It is possible to cast columns using the cast attribute.
+### Set custom field map
 
 ```PHP
 // Define a custom map
-$csv->setMapField([                
-    'price' => ['column' => 'Retailprice', 'cast' => 'float'],
+$csv->setMapFields([
+    'name' => new \Juanparati\CsvReader\FieldMaps\CsvFieldString(
+        'Firstname'
+    ),
+    'price' => new \Juanparati\CsvReader\FieldMaps\CsvFieldDecimal(
+        'Retailprice', \Juanparati\CsvReader\CsvReader::DECIMAL_SEP_COMMA
+    )
+],
+    0   // Define where the headline starts. Default: 0 (first line)
+);
+
+// Extract rows sequentially
+while ($row = $csv->readMore())
+{
+    echo 'Name: ' . $row['name'];
+    echo 'Price: ' . $row['price'];             
+}
+```
+
+## Custom field map (For CSV without header)
+
+```PHP
+$csv = new \Juanparati\CsvReader\CsvReader(
+    file: 'file.csv',     // File path
+    delimiter: ';'             // Column delimiter
+);
+        
+// Define a custom map
+$csv->setMapFields([
+    'name' => new \Juanparati\CsvReader\FieldMaps\CsvFieldString(
+        0   // Column 0
+    ),
+    'price' => new \Juanparati\CsvReader\FieldMaps\CsvFieldDecimal(
+        3,  // Column 3 
+        \Juanparati\CsvReader\CsvReader::DECIMAL_SEP_COMMA
+    ),
 ]);
 ```
 
-Available casts are:
+### Field map types
 
-- int
-- integer (alias of int)
-- float
-- string
+| Type                                            | Description                |
+|-------------------------------------------------|----------------------------|
+| \Juanparati\CsvReader\FieldMaps\CsvFieldAuto    | Infer automatically column |
+| \Juanparati\CsvReader\FieldMaps\CsvFieldBool    | Boolean column             |
+| \Juanparati\CsvReader\FieldMaps\CsvFieldDecimal | Currency column            |
+| \Juanparati\CsvReader\FieldMaps\CsvFieldInt     | Int column                 |
+| \Juanparati\CsvReader\FieldMaps\CsvFieldString  | String column              |
 
 
-### Remove characters from column
+#### CsvFieldDecimal
+
+It's possible to define a decimal separator for currency columns.
+
+| Decimal separator | Constant                                     |
+|-------------------|----------------------------------------------|
+| .                 | CsvFieldDecimal::DECIMAL_SEP_POINT           |
+| ,                 | CsvFieldDecimal::DECIMAL_SEP_COMMA           |
+| '                 | CsvFieldDecimal::DECIMAL_SEP_APOSTROPHE      |
+| ⎖                 | CsvFieldDecimal::DECIMAL_SEP_APOSTROPHE_9995 |
+| _                 | CsvFieldDecimal::DECIMAL_SEP_UNDERSCORE      |
+| ٫                 | CsvFieldDecimal::DECIMAL_SEP_ARABIC          |
+
+
+### Remove characters from columns
 
 Sometimes it is required to remove certain characters on a specific column.
 
 ```PHP
-// Define a custom map
-$csv->setMapField([                
-    'price' => ['column' => 'Retailprice', 'cast' => 'float', 'remove' => ['EUR', '€'] 
+// Remove 'EUR' and '€' from column
+$csv->setMapField([     
+    'price' => (new \Juanparati\CsvReader\FieldMaps\CsvFieldDecimal(
+        0   // Column 0
+    ))->setRemoveRule(['EUR', '€']),           
 ]);
 ```
 
-### Replace characters from column
+```PHP
+// Remove all prices higher than 100
+$csv->setMapField([     
+    'price' => (new \Juanparati\CsvReader\FieldMaps\CsvFieldDecimal(
+        0   // Column 0
+    ))->setRemoveRule(fn($price) => $price > 100),           
+]);
+```
+
+`setRemoveRule` accepts strings, arrays and callbacks.
+
+### Replace characters from the column
 
 ```PHP
 // Replace "Mr." by "Señor"
-$csv->setMapField([                
-    'name' => ['column' => 'Firstname', 'replace' => ['Mr.' => 'Señor'] 
+$csv->setMapField([     
+    'name' => (new \Juanparati\CsvReader\FieldMaps\CsvFieldString(
+        'Firstname'
+    ))->setReplaceRule('Mr.', 'Señor')              
 ]);
-```          
+```
+
           
 ### Exclude flag
 
@@ -181,51 +199,63 @@ Sometimes it's convenient to flag rows according to the column data.
 
 ```PHP
 // Exclude all names that equal to John
-$csv->setMapField([                
-    'name' => ['column' => 'Firstname', 'exclude' => ['John'] 
+$csv->setMapField([    
+    'name' => (new \Juanparati\CsvReader\FieldMaps\CsvFieldString(
+        'Firstname'
+    ))->setExclusionRule('John')                     
 ]);
 ```
           
 In this example every time that column "name" has the word "John", the virtual column "exclude" will contain the value "true" (boolean).
 
-The exclude parameter accepts regular expressions.
+`setExclusionRule` accepts strings, arrays and callbacks.
 
 
 ### Apply stream filters
 
+It's possible to apply stream filters to the CSV file. Filter streams are applied before the charset conversion.
+
 ```PHP
 $filters = [
-    new \Juanparati\CSVReader\CsvStreamFilter('zlib.inflate'),
+    new \Juanparati\CsvReader\CsvStreamFilter('zlib.inflate'),
 ];
 
-$csv = new \Juanparati\CSVReader\CsvReader(
-    file: 'file.csv', 
+$csv = new \Juanparati\CsvReader\CsvReader(
+    file: 'file.csv',
     streamFilters: $filter
 );
 ```
 
-### UTF-16 Support
+### Charset and UTF Support
 
-CSVReader automatically detects and handles UTF-16 encoded files with BOM:
+CSVReader automatically detects and handles UTF-16 and UTF-32 encoded files with and without BOM.
+
+The default charset is UTF-8.
 
 ```PHP
-// Automatic detection - no special configuration needed!
-$csv = new \Juanparati\CSVReader\CsvReader('utf16-file.csv');
+// Automatic detection for files that contains BOM (Fallback is UTF-8)
+$csv = new \Juanparati\CsvReader\CsvReader('utf16-file.csv');
 
 // The library automatically:
-// 1. Detects the BOM (UTF-16LE or UTF-16BE)
+// 1. Detects the BOM (UTF-16LE, UTF-16BE...)
 // 2. Applies the appropriate stream filter for conversion
 // 3. Processes the file as UTF-8 internally
 
 // You can check the detected BOM information
-$bomInfo = $csv->getEncodingInfo();
-echo "Detected: " . $bomInfo['charset']; // e.g., "UTF-16LE"
+$encodingInfo = $csv->info()['encoding'];
+echo "Has BOM" . ($encodingInfo['bom'] ? 'Yes' : 'No');
+echo "Charset: {$encodingInfo['charset'}"; // e.g., "UTF-16LE"
 ```
 
-Supported encodings with BOM auto-detection:
-- UTF-8 with BOM
-- UTF-16LE (Little Endian) with BOM
-- UTF-16BE (Big Endian) with BOM
+Sometimes it's necessary to force a specific charset for files that don't contain a BOM passing the charset as a parameter. Example:
+
+```PHP
+// Create CSVReader instance
+$csv = new \Juanparati\CsvReader\CsvReader(
+    file: 'file.csv',       // File path 
+    charset: 'UTF-16',      // Charset (Default auto-detect)
+);
+```
 
 
 ### File information
@@ -234,7 +264,7 @@ It's possible to get the current pointer position in bytes calling to the "tellP
 To obtain the file stat, a call to the "info" method will return the file stat (See http://php.net/manual/en/function.fstat.php).
 
 ```PHP
-$csv = new \Juanparati\CSVReader\CsvReader('file.csv');
+$csv = new \Juanparati\CsvReader\CsvReader('file.csv');
 echo 'Current byte position ' . $csv->tellPosition() . ' of ' . $csv->info()['size'];
 ```      
 

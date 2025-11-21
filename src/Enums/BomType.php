@@ -1,6 +1,6 @@
 <?php
 
-namespace Juanparati\CSVReader\Enums;
+namespace Juanparati\CsvReader\Enums;
 
 enum BomType: string
 {
