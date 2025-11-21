@@ -3,7 +3,6 @@
     "description": "A light/fast CSV reader suitable for pretty large files.",
     "type": "library",
     "license": "MIT",
-    "tags": ["csv", "reader", "quick", "stream"],
     "authors": [
         {
             "name": "Juan Lago",
