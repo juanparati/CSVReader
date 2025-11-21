@@ -1,9 +1,16 @@
+![Test passed](https://github.com/juanparati/CSVReader/actions/workflows/test.yml/badge.svg)
+
 # CSVReader
 
 CSVReader is a lightweight and fast CSV reader library for PHP that is suitable for large size files.
 
 CSVReader was developed for business and e-commerce environments where large CSV files with possible corrupted data can be ingested.
 
+## Installation
+
+```sh
+composer require juanparati/csvreader
+```
 
 ## Features
 
