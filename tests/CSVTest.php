@@ -1,15 +1,14 @@
 <?php
+
 declare(strict_types=1);
 
-namespace Juanparati\CSVReader\Tests;
+namespace Juanparati\CsvReader\Tests;
 
-use Juanparati\CSVReader\CsvReader;
+use Juanparati\CsvReader\CsvReader;
 use PHPUnit\Framework\TestCase;
 
 abstract class CSVTest extends TestCase
 {
-
-
     /**
      * Sample file.
      */
@@ -37,7 +36,7 @@ abstract class CSVTest extends TestCase
     {
         parent::setUp();
 
-        $samplePath = __DIR__ . '/Samples/';
+        $samplePath = __DIR__ . '/Fixtures/';
 
         $this->config = json_decode(file_get_contents($samplePath . $this->sample . '.json'), true);
 
@@ -46,11 +45,10 @@ abstract class CSVTest extends TestCase
             $this->config['col_delimiter'],
             $this->config['text_delimiter'],
             $this->config['charset'],
-            $this->config['decimal_sep'],
             $this->config['escape_char']
         );
 
-        $this->instance->setMapField($this->config['fields']);
+        $this->instance->importFieldMaps($this->config['fields']);
     }
 
 
@@ -104,6 +102,7 @@ abstract class CSVTest extends TestCase
             $this->assertEquals($value, $row[$column]);
         }
     }
+
 
 
 }

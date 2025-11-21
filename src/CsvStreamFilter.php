@@ -1,11 +1,11 @@
 <?php
+
 declare(strict_types=1);
 
-namespace Juanparati\CSVReader;
+namespace Juanparati\CsvReader;
 
 final class CsvStreamFilter
 {
-
     protected mixed $fp;
 
     /**
@@ -14,7 +14,9 @@ final class CsvStreamFilter
      * @param string $filter
      * @param mixed|null $params
      */
-    public function __construct(protected string $filter, protected mixed $params = null) {}
+    public function __construct(protected string $filter, protected mixed $params = null)
+    {
+    }
 
 
     /**
@@ -23,7 +25,8 @@ final class CsvStreamFilter
      * @param mixed $fp
      * @return CsvStreamFilter
      */
-    public function setFp(mixed $fp) {
+    public function setFp(mixed $fp)
+    {
         if ($fp === false) {
             throw new \RuntimeException('Cannot set filter on a closed stream');
         }

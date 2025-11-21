@@ -1,9 +1,10 @@
 <?php
+
 declare(strict_types=1);
 
-namespace Juanparati\CSVReader\Tests\Test;
+namespace Juanparati\CsvReader\Tests\Unit;
 
-use Juanparati\CSVReader\Tests\CSVTest;
+use Juanparati\CsvReader\Tests\CSVTest;
 
 class Sample1Test extends CSVTest
 {

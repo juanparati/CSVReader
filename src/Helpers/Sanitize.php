@@ -2,20 +2,19 @@
 
 declare(strict_types=1);
 
-namespace Juanparati\CSVReader\Helpers;
-
+namespace Juanparati\CsvReader\Helpers;
 
 /**
  * Class Sanitize.
  *
  * Sanitization helper methods
  *
- * @package Juanparati\CSVReader
+ * @package Juanparati\CsvReader
  */
 class Sanitize
 {
     /**
-     * Check if value is a currency type and extract the value.
+     * Check if the value is a currency type and extract the value.
      *
      * @param mixed $value
      * @param string $decimalPoint
