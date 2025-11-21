@@ -265,7 +265,7 @@ To obtain the file stat, a call to the "info" method will return the file stat (
 
 ```PHP
 $csv = new \Juanparati\CsvReader\CsvReader('file.csv');
-echo 'Current byte position ' . $csv->tellPosition() . ' of ' . $csv->info()['size'];
+echo 'Current byte position ' . $csv->tellPosition() . ' of ' . $csv->info()['file']['size'];
 ```      
 
 ## Backers
