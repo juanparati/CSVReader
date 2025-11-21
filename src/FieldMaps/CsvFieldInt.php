@@ -2,8 +2,6 @@
 
 namespace Juanparati\CSVReader\FieldMaps;
 
-use Juanparati\CSVReader\Enums\CsvFieldCast;
-
 /**
  * Auto cast fields.
  */
