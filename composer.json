@@ -32,7 +32,7 @@
         }
     },
     "scripts": {
-        "bench": "phpbench run tests/Benchmark --report=default",
+        "bench": "php tests/BenchPrepare.php && phpbench run tests/Benchmark --report=default",
         "test": "phpunit"
     }
 }
