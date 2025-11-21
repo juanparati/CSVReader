@@ -77,3 +77,4 @@ fabric.properties
 
 ## PHP unit
 .phpunit.cache
+/tests/tmp/sample.csv

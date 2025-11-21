@@ -1,0 +1,40 @@
+{
+  "col_delimiter": "|",
+  "head_start": 0,
+  "charset": "UTF-8",
+  "text_delimiter": "",
+  "decimal_sep": ".",
+  "escape_char": "\\",
+  "fields": {
+    "card_type": {
+      "class": "Juanparati\\CSVReader\\FieldMaps\\CsvFieldString",
+      "srcField": "card_type"
+    },
+    "score": {
+      "class": "Juanparati\\CSVReader\\FieldMaps\\CsvFieldInt",
+      "srcField": "score"
+    },
+    "gamer": {
+      "class": "Juanparati\\CSVReader\\FieldMaps\\CsvFieldString",
+      "srcField": "player"
+    }
+  },
+  "tests": {
+    "first": {
+      "card_type": "♥️",
+      "score": 10,
+      "gamer": "Juan Nuñez"
+    },
+    "last": {
+      "card_type": "♠️",
+      "score": 12,
+      "gamer": "Mark Johnson"
+    },
+    "line": {
+      "_num": "2",
+      "card_type": "♦️",
+      "score": 11,
+      "gamer": "かいと"
+    }
+  }
+}

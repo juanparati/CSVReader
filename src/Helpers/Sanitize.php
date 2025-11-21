@@ -15,7 +15,7 @@ namespace Juanparati\CSVReader\Helpers;
 class Sanitize
 {
     /**
-     * Check if value is a currency type and extract the value.
+     * Check if the value is a currency type and extract the value.
      *
      * @param mixed $value
      * @param string $decimalPoint

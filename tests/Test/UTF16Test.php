@@ -12,11 +12,11 @@ class UTF16Test extends TestCase
     public function testUTF16WithBom()
     {
         $reader = (new CsvReader(
-            __DIR__ . '/../Samples/sample9.csv',
+            __DIR__ . '/../Fixtures/utf16bom.csv',
             ','
         ))->setAutomaticMapField();
 
-        $this->assertEquals('UTF-16LE', $reader->getBOMInfo()['type']);
+        $this->assertEquals('UTF-16LE', $reader->info()['encoding']['charset']);
 
         $this->assertEquals([
             'ID'          => 1,

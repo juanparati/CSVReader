@@ -42,7 +42,7 @@ $csv = new \Juanparati\CSVReader\CsvReader(
 
 
 // Define a custom map
-$csv->setMapField([
+$csv->setMapFields([
     'name' => ['column' => 'Firstname'],
     'price' => ['column' => 'Retailprice'],
 ],
@@ -66,7 +66,7 @@ $csv = new \Juanparati\CSVReader\CsvReader(
 );
         
 // Define a custom map
-$csv->setMapField([
+$csv->setMapFields([
     'name' => ['column' => 0],
     'price' => ['column' => 3],
 ]);
@@ -106,7 +106,7 @@ Separators are set as string or constant representation.
 |------------|------------------------------------------------------|
 | ;          | \Juanparati\CSVReader\CSVReader::DELIMITER_SEMICOLON |
 | ,          | \Juanparati\CSVReader\CSVReader::DELIMITER_COMMA     |
-|            | \Juanparati\CSVReader\CSVReader::DELIMITER_PIPE      |
+| \|         | \Juanparati\CSVReader\CSVReader::DELIMITER_PIPE      |
 | \t         | \Juanparati\CSVReader\CSVReader::DELIMITER_TAB       |
 | ^          | \Juanparati\CSVReader\CSVReader::DELIMITER_CARET     |
 
@@ -186,7 +186,7 @@ $csv->setMapField([
 ]);
 ```
           
-In this every time that column "name" has the word "John", the virtual column "exclude" will contain the value "true" (boolean).
+In this example every time that column "name" has the word "John", the virtual column "exclude" will contain the value "true" (boolean).
 
 The exclude parameter accepts regular expressions.
 
@@ -218,7 +218,7 @@ $csv = new \Juanparati\CSVReader\CsvReader('utf16-file.csv');
 // 3. Processes the file as UTF-8 internally
 
 // You can check the detected BOM information
-$bomInfo = $csv->getBOMInfo();
+$bomInfo = $csv->getEncodingInfo();
 echo "Detected: " . $bomInfo['charset']; // e.g., "UTF-16LE"
 ```
 

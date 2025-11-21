@@ -3,10 +3,11 @@ declare(strict_types=1);
 
 namespace Juanparati\CSVReader;
 
+use Juanparati\CSVReader\Contracts\CsvFieldMap;
+use Juanparati\CSVReader\Enums\BomType;
 use Juanparati\CSVReader\Exceptions\CsvFileException;
-use Juanparati\CSVReader\Helpers\BomString;
-use Juanparati\CSVReader\Helpers\Sanitize;
-use Juanparati\CSVReader\Helpers\Arr;
+use Juanparati\CSVReader\FieldMaps\CsvFieldAuto;
+use Juanparati\CSVReader\Helpers\EncodingInfo;
 
 
 /**
@@ -18,13 +19,18 @@ class CsvReader
 {
 
     /**
+     * The base charset
+     */
+    public const string BASE_CHARSET = 'UTF-8';
+
+    /**
      * Common delimiters.
      */
     public const string DELIMITER_SEMICOLON = ';';
-    public const string DELIMITER_COMMA     = ',';
-    public const string DELIMITER_PIPE      = '|';
-    public const string DELIMITER_TAB       = "\t";
-    public const string DELIMITER_CARET     = '^';
+    public const string DELIMITER_COMMA = ',';
+    public const string DELIMITER_PIPE = '|';
+    public const string DELIMITER_TAB = "\t";
+    public const string DELIMITER_CARET = '^';
     public const string DELIMITER_AMPERSAND = '&';
 
 
@@ -33,70 +39,35 @@ class CsvReader
      */
     public const string ENCLOSURE_TILDES = '~';
     public const string ENCLOSURE_QUOTES = '"';
-    public const string ENCLOSURE_NONE   = "\010";    // Using backspace as replacement
+    public const string ENCLOSURE_NONE = "\010";    // Using backspace as replacement
 
 
     /**
-     * Common decimal separators.
-     */
-    public const string DECIMAL_SEP_POINT = '.';
-    public const string DECIMAL_SEP_COMMA = ',';
-    public const string DECIMAL_SEP_APOSTROPHE = "'";
-    public const string DECIMAL_SEP_APOSTROPHE_9995 = '⎖';
-    public const string DECIMAL_SEP_UNDERSCORE = '_';
-    public const string DECIMAL_SEP_ARABIC = '٫';
-
-
-    /**
-     * Column -> Field name map.
-     */
-    protected array $fieldmap = [];
-
-
-    /**
-     * Field properties (Only when a field map is used).
-     */
-    protected array $fieldProps = [];
-
-
-    /**
-     * Indicates if the CSV file needs to be encoded.
+     * Column -> Field mapping.
      *
-     * @var bool
+     * @var CsvFieldMap[]
      */
-    protected bool $needsEncoding = false;
+    protected array $fieldMaps = [];
 
 
     /**
-     * Cached static values for field mapping.
+     * File pointer resource.
+     *
+     * @var false|resource
+     */
+    protected mixed $fp;
+
+
+    /**
+     * Encoding information.
      *
      * @var array
      */
-    protected array $staticValues = [];
-
-
-    /**
-     * Pre-compiled exclusion patterns for performance.
-     *
-     * @var array
-     */
-    protected array $compiledExcludePatterns = [];
-
-
-    /**
-     * Detected BOM type (if any).
-     *
-     * @var string|null
-     */
-    protected ?string $bomType = null;
-
-
-    /**
-     * Number of bytes to skip for BOM.
-     *
-     * @var int
-     */
-    protected int $bomLength = 0;
+    protected array $encodingInfo = [
+        'bom'        => null,
+        'bom_length' => 0,
+        'charset'    => self::BASE_CHARSET
+    ];
 
 
     /**
@@ -105,25 +76,24 @@ class CsvReader
      * @param string $file
      * @param string $delimiter
      * @param string $enclosureChar
-     * @param string $charset CSV charset encoding
-     * @param string $decimalSep
+     * @param string|null $charset CSV charset encoding (Default auto-detect)
      * @param string $escapeChar
-     * @param bool $hasBom
+     * @param string $excludeField
      * @param CsvStreamFilter[] $streamFilters
      * @throws CsvFileException
      */
     public function __construct(
         protected string $file,
-        protected string $delimiter = ';',
-        protected string $enclosureChar = '"',
-        protected string $charset = 'UTF-8',
-        protected string $decimalSep = ',',
+        protected string $delimiter = self::DELIMITER_SEMICOLON,
+        protected string $enclosureChar = self::ENCLOSURE_QUOTES,
+        ?string $charset = null,
         protected string $escapeChar = '\\',
-        protected bool $hasBom = false,
-        protected array $streamFilters = []
+        protected string $excludeField = 'exclude',
+        protected array  $streamFilters = []
     )
     {
-        $this->fp = fopen($this->file, "r");
+        $this->enclosureChar = $this->enclosureChar ?: static::ENCLOSURE_NONE;
+        $this->fp            = fopen($this->file, "r");
 
         if ($this->fp === false) {
             throw new CsvFileException('Unable to read CSV file: ' . $this->file);
@@ -135,28 +105,17 @@ class CsvReader
             fn($r) => $r->setFp($this->fp)->apply($this->fp)
         );
 
-        $this->enclosureChar = empty($enclosureChar) ? chr(8) : $enclosureChar;
+        // Detect encoding and BOM (read 4 bytes to detect all BOM types)
+        $this->encodingInfo = EncodingInfo::getInfo(fread($this->fp, 4));
 
-        // Detect BOM type (read 4 bytes to detect all BOM types)
-        $bomBytes = fread($this->fp, 4);
-        $this->bomType = BomString::detectBOM($bomBytes);
-
-        if ($this->bomType !== null) {
-            $this->hasBom = true;
-            $this->bomLength = BomString::getBOMLength($this->bomType);
-
-            // Auto-detect charset from BOM if not explicitly set or if UTF-8 was default
-            if ($this->charset === 'UTF-8') {
-                $this->charset = BomString::getCharset($this->bomType);
-            }
+        // In case that we want to enforce a specific charset
+        if ($charset) {
+            $this->encodingInfo['charset'] = $charset;
         }
 
-        // Detect if it needs encoding
-        $this->needsEncoding = ($this->charset !== 'UTF-8');
-
-        // For UTF-16, we need to apply a stream filter for proper conversion
-        if (str_starts_with($this->charset, 'UTF-16')) {
-            $this->applyUTF16StreamFilter();
+        // For UTF-16/UTF-32, we need to apply a stream filter for proper conversion
+        if ($this->encodingInfo['charset'] !== static::BASE_CHARSET) {
+            $this->applyUTFStreamFilter();
         }
     }
 
@@ -167,7 +126,7 @@ class CsvReader
     public function __destruct()
     {
         if (is_resource($this->fp)) {
-            fclose($this->fp);
+            @fclose($this->fp);
         }
     }
 
@@ -175,22 +134,17 @@ class CsvReader
     /**
      * Set the field mapping (Used with CSV that have header columns).
      *
-     * @param array $fields
+     * @param CsvFieldMap[] $fields
      * @param int $headerRow
      * @return CsvReader
      */
-    public function setMapField(array $fields, int $headerRow = 0) : static
+    public function setMapFields(array $fields, int $headerRow = 0): static
     {
-        // Reset fieldmap and properties
-        $this->fieldmap    = [];
-        $this->fieldProps = [];
-        $this->staticValues = [];
-        $this->compiledExcludePatterns = [];
+        // Reset field maps and properties
+        $this->fieldMaps = [];
 
         // Reset pointer position
-        if ($headerRow !== false) {
-            $this->seekLine($headerRow);
-        }
+        $this->seekLine($headerRow);
 
         $columns = $this->readCSVLine();
 
@@ -202,42 +156,21 @@ class CsvReader
         if (count($columns) < 2)
             return $this;
 
-        // Encode columns
-        // ⚡️ Optimization: "encode" method already checks if it needs encoding, but for performance reasons
-        // we ignore the method call when encoding is not required.
-        if ($this->needsEncoding) {
-            $columns = array_map(fn($r) => $this->encode($r), $columns);
-        }
-
-        // Map fields
+        // Maps fields
         foreach ($fields as $k => $field) {
-            if ($field === false || !isset($field['column'])) {
-                continue;
+            if (!($field instanceof CsvFieldMap)) {
+                throw new \RuntimeException('Invalid field mapping for key: ' . $k);
             }
 
-            if (is_int($field['column'])) {
-                $this->fieldmap[$k] = $field['column'];
+            if (is_int($field->srcField)) {
+                $this->fieldMaps[$k] = $field;
             } else {
-                $this->fieldmap[$k] = array_search($field['column'], $columns);
-            }
-        }
+                $columnNum = array_search($field->srcField, $columns);
 
-        $this->fieldProps = $fields;
-
-        // ⚡️ Optimization: Pre-cache static values and compile exclusion patterns
-        foreach ($fields as $k => $props) {
-            if (!is_array($props)) {
-                continue;
-            }
-
-            // Cache static values
-            if (array_key_exists('static_value', $props)) {
-                $this->staticValues[$k] = $props['static_value'];
-            }
-
-            // Pre-compile exclusion patterns
-            if (!empty($props['exclude'])) {
-                $this->compiledExcludePatterns[$k] = Arr::compilePatterns($props['exclude']);
+                if ($columnNum !== false) {
+                    $field->srcField     = $columnNum;
+                    $this->fieldMaps[$k] = $field;
+                }
             }
         }
 
@@ -251,7 +184,7 @@ class CsvReader
      * @param int $headerRow
      * @return static
      */
-    public function setAutomaticMapField(int $headerRow = 0) : static
+    public function setAutomaticMapField(int $headerRow = 0): static
     {
         $this->seekLine($headerRow);
 
@@ -264,10 +197,55 @@ class CsvReader
         $map = [];
 
         foreach ($headers as $header) {
-            $map[$header]['column'] = $header;
+            $map[$header] = new CsvFieldAuto($header);
         }
 
-        return $this->setMapField($map, $headerRow);
+        return $this->setMapFields($map, $headerRow);
+    }
+
+    /**
+     * Get the field mapping.
+     */
+    public function getFieldMaps(): array
+    {
+        return $this->fieldMaps;
+    }
+
+    /**
+     * Export field mapping.
+     *
+     * @return array
+     */
+    public function exportFieldMaps(): array
+    {
+        return array_map(
+            fn ($map) => $map->jsonSerialize(),
+            $this->fieldMaps
+        );
+    }
+
+
+    /**
+     * Import field mapping from an array.
+     *
+     * @param array $maps
+     * @return $this
+     */
+    public function importFieldMaps(array $maps): static
+    {
+        $fields = [];
+
+        foreach ($maps as $k => $map) {
+            if (!isset($map['class'])) {
+                throw new \RuntimeException('Invalid field mapping for key: ' . $k);
+            }
+
+            $fields[$k] = call_user_func([$map['class'], 'make'], $map);
+        }
+
+        $this->setMapFields($fields);
+
+        return $this;
     }
 
 
@@ -278,9 +256,8 @@ class CsvReader
      * @param int $headerRow
      * @return array
      */
-    public function read(int $headerRow = 1) : array
+    public function read(int $headerRow = 1): array
     {
-
         $this->seekLine($headerRow);
 
         $records = [];
@@ -343,69 +320,32 @@ class CsvReader
             return true;
         }
 
-        $frow = [];
+        $from = [];
 
-        if (empty($this->fieldmap)) {
-            $frow[] = $columns;
+        if (empty($this->fieldMaps)) {
+            $from[] = $columns;
         } else {
-            foreach ($this->fieldmap as $k => $columnmap) {
+            foreach ($this->fieldMaps as $k => $columnMap) {
 
-                if (isset($columns[$columnmap])) {
-                    $value = $columns[$columnmap];
+                if (!isset($columns[$columnMap->srcField]))
+                    continue;
 
-                    // Remove characters
-                    if (!empty($this->fieldProps[$k]['remove'])) {
-                        $value = str_replace($this->fieldProps[$k]['remove'], '', $value);
-                    }
+                $value = $columns[$columnMap->srcField];
 
-                    // Replace characters
-                    if (!empty($this->fieldProps[$k]['replace'])) {
-                        $value = strtr($value, $this->fieldProps[$k]['replace']);
-                    }
+                $value = $columnMap->transform($value);
 
-                    // Extract word segments
-                    if (isset($this->fieldProps[$k]['segment']) && is_int($this->fieldProps[$k]['segment'])) {
-                        $segments = explode(' ', $value);
-                        $value = empty($segments[$this->fieldProps[$k]['segment']]) ? '' : $segments[$this->fieldProps[$k]['segment']];
-                    }
+                if ($columnMap->shouldBeFiltered($value))
+                    return false;
 
-                    // Cast
-                    if (!empty($this->fieldProps[$k]['cast'])) {
-                        $value = match ($this->fieldProps[$k]['cast']) {
-                            'int', 'integer' => (int) $value,
-                            'float' => (float) $value,
-                            'string' => (string) $value,
-                            default => $value,
-                        };
-                    }
-
-                    // Apply exclusion list
-                    // ⚡️ Optimization: Use pre-compiled patterns to avoid regex compilation on every row
-                    if (!empty($this->compiledExcludePatterns[$k])) {
-                        if (Arr::isExpressionFound($this->compiledExcludePatterns[$k], $value, true)) {
-                            $frow['exclude'] = true;
-                        }
-                    }
-
-                    // Convert decimal values
-                    $currency = Sanitize::extractCurrency($value, $this->decimalSep);
-
-                    // Save value or string
-                    $frow[$k] = $currency === false ? $this->encode($value) : $currency;
-
+                if ($columnMap->shouldBeExclude($value)) {
+                    $from[$this->excludeField] = true;
                 }
 
-            }
-
-            // Set static values
-            // ⚡️ Optimization: Use cached static values instead of iterating through field props
-            if (!empty($this->staticValues)) {
-                $frow = array_merge($frow, $this->staticValues);
+                $from[$k] = $value;
             }
         }
 
-
-        return $frow;
+        return $from;
     }
 
 
@@ -415,14 +355,17 @@ class CsvReader
      * @param int $line
      * @return bool
      */
-    public function seekLine(int $line) : bool
+    public function seekLine(int $line): bool
     {
         // Reset file pointer position
         rewind($this->fp);
 
         // Ignore BOM sequence
-        if ($this->hasBom && $this->bomLength > 0) {
-            fseek($this->fp, $this->bomLength);
+        // @see: https://en.wikipedia.org/wiki/Byte_order_mark
+        if ($line === 0
+            && $this->encodingInfo['bom']
+            && $this->encodingInfo['bom_length'] > 0) {
+            fseek($this->fp, $this->encodingInfo['bom_length']);
         }
 
         $current = 0;
@@ -453,14 +396,16 @@ class CsvReader
 
 
     /**
-     * Get file information.
+     * Get encoding information and file stats.
      *
-     * @see http://php.net/manual/en/function.fstat.php
-     * @return array
+     * @return array<encoding:array, file:array>
      */
-    public function info() : array
+    public function info(): array
     {
-        return fstat($this->fp);
+        return [
+            'encoding' => $this->encodingInfo,
+            'file'     => fstat($this->fp),
+        ];
     }
 
     /**
@@ -470,69 +415,30 @@ class CsvReader
      */
     protected function readCSVLine(): array|false|null
     {
-        return fgetcsv($this->fp, 0, $this->delimiter, $this->enclosureChar,  $this->escapeChar);
+        return fgetcsv($this->fp, 0, $this->delimiter, $this->enclosureChar, $this->escapeChar);
     }
 
 
     /**
-     * Encode a text to UTF-8.
-     *
-     * @param string $text
-     * @return string
-     */
-    protected function encode(string $text): string
-    {
-        if ($this->needsEncoding === false) {
-            return $text;
-        }
-
-        return mb_convert_encoding($text, 'UTF-8', $this->charset);
-    }
-
-
-    /**
-     * Apply UTF-16 stream filter for automatic conversion.
-     * This enables reading UTF-16 files as if they were UTF-8.
+     * Apply UTF-16/UTF-32 stream filter for automatic conversion.
+     * This enables reading UTF-16/UTF-32 files as if they were UTF-8.
      *
      * @return void
      */
-    protected function applyUTF16StreamFilter(): void
+    protected function applyUTFStreamFilter(): void
     {
         // Reset to beginning and skip BOM
         rewind($this->fp);
-        if ($this->bomLength > 0) {
-            fseek($this->fp, $this->bomLength);
+
+        // Skip BOM sequence
+        if ($this->encodingInfo['bom_length'] > 0) {
+            fseek($this->fp, $this->encodingInfo['bom_length']);
         }
 
         // Apply the appropriate iconv stream filter
-        // This converts UTF-16 to UTF-8 on-the-fly as we read
-        $filterName = match ($this->charset) {
-            'UTF-16LE' => 'convert.iconv.UTF-16LE.UTF-8',
-            'UTF-16BE' => 'convert.iconv.UTF-16BE.UTF-8',
-            default => null,
-        };
+        // This converts UTF-16/UTF-32 to UTF-8 on-the-fly as we read
+        $filterName = "convert.iconv.{$this->encodingInfo['charset']}." . static::BASE_CHARSET;
 
-        if ($filterName !== null) {
-            stream_filter_append($this->fp, $filterName, STREAM_FILTER_READ);
-            // After applying the filter, we're reading UTF-8, so disable encoding
-            $this->needsEncoding = false;
-        }
+        stream_filter_append($this->fp, $filterName, STREAM_FILTER_READ);
     }
-
-
-    /**
-     * Get detected BOM information.
-     *
-     * @return array{type: string|null, length: int, charset: string|null}
-     */
-    public function getBOMInfo(): array
-    {
-        return [
-            'type' => $this->bomType,
-            'length' => $this->bomLength,
-            'charset' => $this->bomType !== null ? BomString::getCharset($this->bomType) : null,
-        ];
-    }
-
-
 }

@@ -7,13 +7,16 @@
   "escape_char": "\\",
   "fields": {
     "name": {
-      "column": "Name"
+      "class": "Juanparati\\CSVReader\\FieldMaps\\CsvFieldString",
+      "srcField": "Name"
     },
     "street_address": {
-      "column": "Street_Address"
+      "class": "Juanparati\\CSVReader\\FieldMaps\\CsvFieldString",
+      "srcField": "Street_Address"
     },
     "citation": {
-      "column": "FR_Citation"
+      "class": "Juanparati\\CSVReader\\FieldMaps\\CsvFieldString",
+      "srcField": "FR_Citation"
     }
   },
   "tests": {

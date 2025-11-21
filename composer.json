@@ -18,7 +18,8 @@
     },
     "require-dev": {
         "phpunit/phpunit": "^10.0",
-        "ext-json": "*"
+        "ext-json": "*",
+        "phpbench/phpbench": "^1.4"
     },
     "autoload": {
         "psr-4": {
@@ -29,5 +30,9 @@
         "psr-4": {
             "Juanparati\\CSVReader\\Tests\\": "tests/"
         }
+    },
+    "scripts": {
+        "bench": "phpbench run tests/Benchmark --report=default",
+        "test": "phpunit"
     }
 }
