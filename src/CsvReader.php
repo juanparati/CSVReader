@@ -1,14 +1,13 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Juanparati\CSVReader;
 
 use Juanparati\CSVReader\Contracts\CsvFieldMap;
-use Juanparati\CSVReader\Enums\BomType;
 use Juanparati\CSVReader\Exceptions\CsvFileException;
 use Juanparati\CSVReader\FieldMaps\CsvFieldAuto;
 use Juanparati\CSVReader\Helpers\EncodingInfo;
-
 
 /**
  * Class CSVReader.
@@ -17,7 +16,6 @@ use Juanparati\CSVReader\Helpers\EncodingInfo;
  */
 class CsvReader
 {
-
     /**
      * The base charset
      */
@@ -90,10 +88,9 @@ class CsvReader
         protected string $escapeChar = '\\',
         protected string $excludeField = 'exclude',
         protected array  $streamFilters = []
-    )
-    {
+    ) {
         $this->enclosureChar = $this->enclosureChar ?: static::ENCLOSURE_NONE;
-        $this->fp            = fopen($this->file, "r");
+        $this->fp            = @fopen($this->file, "r");
 
         if ($this->fp === false) {
             throw new CsvFileException('Unable to read CSV file: ' . $this->file);
@@ -102,7 +99,7 @@ class CsvReader
         // Apply stream filters
         array_walk(
             $this->streamFilters,
-            fn($r) => $r->setFp($this->fp)->apply($this->fp)
+            fn ($r) => $r->setFp($this->fp)->apply($this->fp)
         );
 
         // Detect encoding and BOM (read 4 bytes to detect all BOM types)
@@ -149,12 +146,14 @@ class CsvReader
         $columns = $this->readCSVLine();
 
         // Ignore the empty header line
-        if (empty($columns))
+        if (empty($columns)) {
             return $this;
+        }
 
         // Ignore lines with less than 2 columns
-        if (count($columns) < 2)
+        if (count($columns) < 2) {
             return $this;
+        }
 
         // Maps fields
         foreach ($fields as $k => $field) {
@@ -191,8 +190,9 @@ class CsvReader
         $headers = $this->readCSVLine();
 
         // Ignore the empty header line
-        if (empty($headers))
+        if (empty($headers)) {
             return $this;
+        }
 
         $map = [];
 
@@ -327,15 +327,17 @@ class CsvReader
         } else {
             foreach ($this->fieldMaps as $k => $columnMap) {
 
-                if (!isset($columns[$columnMap->srcField]))
+                if (!isset($columns[$columnMap->srcField])) {
                     continue;
+                }
 
                 $value = $columns[$columnMap->srcField];
 
                 $value = $columnMap->transform($value);
 
-                if ($columnMap->shouldBeFiltered($value))
+                if ($columnMap->shouldBeFiltered($value)) {
                     return false;
+                }
 
                 if ($columnMap->shouldBeExclude($value)) {
                     $from[$this->excludeField] = true;

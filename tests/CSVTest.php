@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Juanparati\CSVReader\Tests;
@@ -8,8 +9,6 @@ use PHPUnit\Framework\TestCase;
 
 abstract class CSVTest extends TestCase
 {
-
-
     /**
      * Sample file.
      */
@@ -49,7 +48,7 @@ abstract class CSVTest extends TestCase
             $this->config['escape_char']
         );
 
-        $this->instance->importFieldMaps( $this->config['fields']);
+        $this->instance->importFieldMaps($this->config['fields']);
     }
 
 

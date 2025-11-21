@@ -7,7 +7,6 @@ namespace Juanparati\CSVReader\FieldMaps;
  */
 class CsvFieldDecimal extends CsvFieldMapBase
 {
-
     /**
      * Common decimal separators.
      */
@@ -32,15 +31,10 @@ class CsvFieldDecimal extends CsvFieldMapBase
     }
 
 
-    public function transform(mixed $value): int
+    public function transform(mixed $value): float
     {
         $value = parent::transform($value);
-
-        if ($value !== static::DECIMAL_SEP_POINT) {
-            $value = str_replace($this->decimalSeparator, static::DECIMAL_SEP_POINT, $value);
-        }
-
-        return (float) $value;
+        return (float) str_replace($this->decimalSeparator, static::DECIMAL_SEP_POINT, $value);
     }
 
     public function jsonSerialize(): array

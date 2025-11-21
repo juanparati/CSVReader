@@ -2,7 +2,6 @@
 
 namespace Juanparati\CSVReader\Contracts;
 
-
 use Juanparati\CSVReader\FieldMaps\CsvFieldAuto;
 
 interface CsvFieldMap extends \JsonSerializable
@@ -86,5 +85,5 @@ interface CsvFieldMap extends \JsonSerializable
      * @param array $settings
      * @return CsvFieldAuto
      */
-    public static function make(array $settings) : CsvFieldMap;
+    public static function make(array $settings): CsvFieldMap;
 }

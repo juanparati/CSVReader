@@ -22,7 +22,7 @@ CSVReader was developed for business and e-commerce environments where large CSV
 - Word deletion per column. value.
 - Column value replacement.
 - Value exclusion based on regular expression.
-- Full UTF-8 and UTF-16 support.
+- Full UTF support.
 - BOM support.
 - Lightweight library without external dependencies (Except PHPunit for testing).
 

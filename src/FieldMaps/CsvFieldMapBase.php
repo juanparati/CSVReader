@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Juanparati\CSVReader\FieldMaps;
@@ -49,8 +50,7 @@ abstract class CsvFieldMapBase implements CsvFieldMap
      */
     public function __construct(
         public string|int $srcField,
-    )
-    {
+    ) {
     }
 
 
@@ -127,7 +127,7 @@ abstract class CsvFieldMapBase implements CsvFieldMap
      */
     public function setExclusionRule(mixed $exclusions): static
     {
-        $this->exclusions[] = array_merge($this->exclusions, is_array($exclusions) ? $exclusions : [$exclusions]);
+        $this->exclusions[] = $exclusions;
         return $this;
     }
 
@@ -139,7 +139,7 @@ abstract class CsvFieldMapBase implements CsvFieldMap
      */
     public function setFilterRule(mixed $filter): static
     {
-        $this->filters[] = array_merge($this->filters, is_array($filter) ? $filter : [$filter]);
+        $this->filters[] = $filter;
         return $this;
     }
 
@@ -154,6 +154,10 @@ abstract class CsvFieldMapBase implements CsvFieldMap
     {
         foreach ($this->filters as $filter) {
             if (is_callable($filter) && ($filter($value))) {
+                return true;
+            }
+
+            if (is_array($filter) && in_array($value, $filter)) {
                 return true;
             }
 
@@ -173,10 +177,17 @@ abstract class CsvFieldMapBase implements CsvFieldMap
      */
     public function shouldBeExclude(mixed $value): bool
     {
+
         foreach ($this->exclusions as $exclusion) {
             if (is_callable($exclusion) && ($exclusion($value))) {
                 return true;
-            } else if ($value === $exclusion) {
+            }
+
+            if (is_array($exclusion) && in_array($value, $exclusion)) {
+                return true;
+            }
+
+            if ($value === $exclusion) {
                 return true;
             }
         }

@@ -2,8 +2,7 @@
 
 namespace Juanparati\CSVReader\Enums;
 
-
-enum BomType : string
+enum BomType: string
 {
     /**
      * BOM types and their byte sequences.
@@ -15,7 +14,7 @@ enum BomType : string
     case UTF32_BE = 'UTF-32BE';
 
 
-    protected static function signatures() : array
+    protected static function signatures(): array
     {
         return [
             // UTF-32 (4 bytes) - check first
@@ -35,7 +34,7 @@ enum BomType : string
      *
      * @return string
      */
-    public function signature() : string
+    public function signature(): string
     {
         foreach (self::signatures() as $signature => $type) {
             if ($type === $this) {

@@ -1,7 +1,8 @@
 <?php
+
 declare(strict_types=1);
 
-namespace Juanparati\CSVReader\Tests\Test;
+namespace Juanparati\CSVReader\Tests\Unit;
 
 use Juanparati\CSVReader\Tests\CSVTest;
 

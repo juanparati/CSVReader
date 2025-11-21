@@ -33,6 +33,6 @@
     },
     "scripts": {
         "bench": "phpbench run tests/Benchmark --report=default",
-        "test": "phpunit"
+        "test": "phpunit",
     }
 }

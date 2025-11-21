@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Juanparati\CSVReader\Helpers;
 
-
 use Juanparati\CSVReader\CsvReader;
 use Juanparati\CSVReader\Enums\BomType;
 

@@ -7,14 +7,13 @@ namespace Juanparati\CSVReader\FieldMaps;
  */
 class CsvFieldBool extends CsvFieldMapBase
 {
-
     /**
      * Constructor.
      *
      * @param int|string $srcField
      * @param array $trueValues
      */
-    public function __construct(int|string $srcField, protected array $trueValues = [1, 'true', 'on'] )
+    public function __construct(int|string $srcField, protected array $trueValues = [1, 'true', 'on'])
     {
         parent::__construct($srcField);
     }

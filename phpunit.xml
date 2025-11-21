@@ -14,7 +14,7 @@
 >
     <testsuites>
         <testsuite name="all">
-            <directory>tests/Test/</directory>
+            <directory>tests/Unit/</directory>
         </testsuite>
     </testsuites>
     <source>

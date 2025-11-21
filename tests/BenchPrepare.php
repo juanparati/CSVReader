@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Benchmarks preparation.
  *

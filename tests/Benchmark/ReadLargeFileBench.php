@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Juanparati\CSVReader\Tests\Benchmark;
@@ -10,7 +11,6 @@ use Juanparati\CSVReader\FieldMaps\CsvFieldString;
 
 class ReadLargeFileBench
 {
-
     /**
      * Read a simple file.
      *
@@ -24,8 +24,9 @@ class ReadLargeFileBench
         ))->setAutomaticMapField();
 
         foreach ($reader->readGenerator() as $row) {
-            if (!isset($row['Index']))
+            if (!isset($row['Index'])) {
                 throw new \Exception(sprintf('Index not found in row: %s', json_encode($row)));
+            }
         }
     }
 
@@ -48,8 +49,9 @@ class ReadLargeFileBench
         ]);
 
         foreach ($reader->readGenerator() as $row) {
-            if (!isset($row['Index']))
+            if (!isset($row['Index'])) {
                 throw new \Exception(sprintf('Index not found in row: %s', json_encode($row)));
+            }
 
             if (!is_float($row['price'])) {
                 throw new \Exception(sprintf('Price is not a float: %s', json_encode($row)));
