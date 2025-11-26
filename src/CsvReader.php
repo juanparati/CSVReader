@@ -320,8 +320,9 @@ class CsvReader
 
         // ⚡️ Do not user array_map, it's slower than foreach
         foreach ($columns as &$column) {
-            if ($column === '') {
+            if ($column === '' || $column === null) {
                 $column = null;
+                continue;
             }
 
             $allEmpty = false;
