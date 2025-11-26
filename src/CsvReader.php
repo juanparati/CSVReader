@@ -287,7 +287,7 @@ class CsvReader
      * @param bool $skipEmpty Skip empty lines (default: true)
      * @return \Generator
      */
-    public function readMore(int $headerRow = 1, bool $skipEmpty = true): \Generator
+    public function read(int $headerRow = 1, bool $skipEmpty = true): \Generator
     {
         $this->seekLine($headerRow);
 
@@ -315,8 +315,22 @@ class CsvReader
             return false;
         }
 
+        // Convert empty values to null
+        $allEmpty = true;
+        $columns = array_map(
+            function ($r) use (&$allEmpty) {
+                if ($r === '' || $r === null) {
+                    return null;
+                }
+
+                $allEmpty = false;
+                return $r;
+            },
+            $columns
+        );
+
         // Detect empty lines
-        if (count($columns) === 1) {
+        if ($allEmpty) {
             return true;
         }
 
@@ -328,6 +342,7 @@ class CsvReader
             foreach ($this->fieldMaps as $k => $columnMap) {
 
                 if (!isset($columns[$columnMap->srcField])) {
+                    $from[$k] = null;
                     continue;
                 }
 

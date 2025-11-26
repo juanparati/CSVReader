@@ -23,7 +23,7 @@ class ReadLargeFileBench
             file: __DIR__ . '/../tmp/sample.csv',
         ))->setAutomaticMapField();
 
-        foreach ($reader->readMore() as $row) {
+        foreach ($reader->read() as $row) {
             if (!isset($row['Index'])) {
                 throw new \Exception(sprintf('Index not found in row: %s', json_encode($row)));
             }
@@ -48,7 +48,7 @@ class ReadLargeFileBench
             'color' => (new CsvFieldString('Color'))->setExclusionRule(['Olive', 'Brown'])
         ]);
 
-        foreach ($reader->readMore() as $row) {
+        foreach ($reader->read() as $row) {
             if (!isset($row['Index'])) {
                 throw new \Exception(sprintf('Index not found in row: %s', json_encode($row)));
             }

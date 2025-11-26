@@ -190,7 +190,7 @@ class CsvReaderTest extends TestCase
         $reader->setAutomaticMapField(0);
 
         $count = 0;
-        foreach ($reader->readMore(1) as $row) {
+        foreach ($reader->read(1) as $row) {
             $count++;
             $this->assertIsArray($row);
             $this->assertArrayHasKey('name', $row);
@@ -207,7 +207,7 @@ class CsvReaderTest extends TestCase
         $reader->setAutomaticMapField(0);
 
         $count = 0;
-        foreach ($reader->readMore(1, true) as $row) {
+        foreach ($reader->read(1, true) as $row) {
             $count++;
         }
 
@@ -222,7 +222,7 @@ class CsvReaderTest extends TestCase
 
         $count = 0;
         $emptyCount = 0;
-        foreach ($reader->readMore(1, false) as $row) {
+        foreach ($reader->read(1, false) as $row) {
             $count++;
             if ($row === true) {
                 $emptyCount++;

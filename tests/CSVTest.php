@@ -7,7 +7,7 @@ namespace Juanparati\CsvReader\Tests;
 use Juanparati\CsvReader\CsvReader;
 use PHPUnit\Framework\TestCase;
 
-abstract class CSVTest extends TestCase
+abstract class CsvTest extends TestCase
 {
     /**
      * Sample file.
@@ -57,6 +57,8 @@ abstract class CSVTest extends TestCase
      */
     public function testDefault(): void
     {
+        $this->instance->seekLine($this->config['read_from'] ?? 1);
+
         // Test first line
         if (!empty($this->config['tests']['first'])) {
             $line = $this->instance->readLine();
