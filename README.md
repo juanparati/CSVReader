@@ -62,7 +62,7 @@ $csv->setAutomaticMapField(
 );
 
 // Extract rows sequentially
-while ($row = $csv->readMore())
+while ($row = $csv->read())
 {
     echo 'Name: ' . $row['name'];
     echo 'Price: ' . $row['price'];             
@@ -96,7 +96,7 @@ It's possible to use all kinds of separators, so it is not limited to the enumer
 Enclosure none is used when strings in CSV are not enclosed by any kind of character.
 
 
-### Set custom field map
+### Set custom field maps
 
 ```PHP
 // Define a custom map
@@ -112,7 +112,7 @@ $csv->setMapFields([
 );
 
 // Extract rows sequentially
-while ($row = $csv->readMore())
+while ($row = $csv->read())
 {
     echo 'Name: ' . $row['name'];
     echo 'Price: ' . $row['price'];             
@@ -124,7 +124,7 @@ while ($row = $csv->readMore())
 ```PHP
 $csv = new \Juanparati\CsvReader\CsvReader(
     file: 'file.csv',     // File path
-    delimiter: ';'             // Column delimiter
+    delimiter: ';'        // Column delimiter
 );
         
 // Define a custom map
@@ -137,6 +137,10 @@ $csv->setMapFields([
         \Juanparati\CsvReader\CsvReader::DECIMAL_SEP_COMMA
     ),
 ]);
+
+while ($row = $csv->read(0)) {  // Read from line 0 instead of 1 because the header is not present
+ ...
+}
 ```
 
 ### Field map types

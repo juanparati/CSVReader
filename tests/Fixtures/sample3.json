@@ -1,0 +1,48 @@
+{
+  "col_delimiter": "\t",
+  "head_start": 0,
+  "read_from": 0,
+  "charset": "UTF-8",
+  "text_delimiter": "",
+  "decimal_sep": ".",
+  "escape_char": "\\",
+  "fields": {
+    "column1": {
+      "class": "Juanparati\\CsvReader\\FieldMaps\\CsvFieldAuto",
+      "srcField": 0
+    },
+    "column2": {
+      "class": "Juanparati\\CsvReader\\FieldMaps\\CsvFieldAuto",
+      "srcField": 1
+    },
+    "column3": {
+      "class": "Juanparati\\CsvReader\\FieldMaps\\CsvFieldAuto",
+      "srcField": 2
+    },
+    "column4": {
+      "class": "Juanparati\\CsvReader\\FieldMaps\\CsvFieldAuto",
+      "srcField": 3
+    }
+  },
+  "tests": {
+    "first": {
+      "column1": "foo1",
+      "column2": "bar1",
+      "column3": 1,
+      "column4": 2
+    },
+    "last": {
+      "column1": "foo4",
+      "column2": "bar4",
+      "column3": 6,
+      "column4": null
+    },
+    "line": {
+      "_num": 2,
+      "column1": "foo3",
+      "column2": null,
+      "column3": 5,
+      "column4": null
+    }
+  }
+}

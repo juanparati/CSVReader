@@ -7,15 +7,15 @@
   "escape_char": "\\",
   "fields": {
     "card_type": {
-      "class": "Juanparati\\CSVReader\\FieldMaps\\CsvFieldString",
+      "class": "Juanparati\\CsvReader\\FieldMaps\\CsvFieldString",
       "srcField": "card_type"
     },
     "score": {
-      "class": "Juanparati\\CSVReader\\FieldMaps\\CsvFieldInt",
+      "class": "Juanparati\\CsvReader\\FieldMaps\\CsvFieldInt",
       "srcField": "score"
     },
     "gamer": {
-      "class": "Juanparati\\CSVReader\\FieldMaps\\CsvFieldString",
+      "class": "Juanparati\\CsvReader\\FieldMaps\\CsvFieldString",
       "srcField": "player"
     }
   },
