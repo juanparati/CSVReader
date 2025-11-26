@@ -21,6 +21,7 @@ class ReadLargeFileBench
     {
         $reader = (new \Juanparati\CsvReader\CsvReader(
             file: __DIR__ . '/../tmp/sample.csv',
+            delimiter: CsvReader::DELIMITER_COMMA,
         ))->setAutomaticMapField();
 
         foreach ($reader->read() as $row) {
@@ -41,6 +42,7 @@ class ReadLargeFileBench
     {
         $reader = (new \Juanparati\CsvReader\CsvReader(
             file: __DIR__ . '/../tmp/sample.csv',
+            delimiter: CsvReader::DELIMITER_COMMA,
         ))->setMapFields([
             'id' => new CsvFieldInt('Index'),
             'price' => new CsvFieldDecimal('Price'),
@@ -49,8 +51,8 @@ class ReadLargeFileBench
         ]);
 
         foreach ($reader->read() as $row) {
-            if (!isset($row['Index'])) {
-                throw new \Exception(sprintf('Index not found in row: %s', json_encode($row)));
+            if (!isset($row['id'])) {
+                throw new \Exception(sprintf('Id not found in row: %s', json_encode($row)));
             }
 
             if (!is_float($row['price'])) {
