@@ -95,14 +95,15 @@ class CsvReaderTest extends TestCase
         $this->assertInstanceOf(CsvFieldAuto::class, $fieldMaps['name']);
     }
 
-    public function testSetAutomaticMapFieldIgnoresSingleColumnLine(): void
+    public function testSetAutomaticMapFieldSingleColumnLine(): void
     {
-        file_put_contents($this->tempFilePath, "single\nvalue\n");
+        file_put_contents($this->tempFilePath, "single\none");
         $reader = new CsvReader($this->tempFilePath, ',');
         $result = $reader->setAutomaticMapField(0);
 
         $this->assertSame($reader, $result);
-        $this->assertEmpty($reader->getFieldMaps());
+        $this->assertNotEmpty($reader->getFieldMaps());
+        $this->assertEquals('one', $reader->readLine()['single']);
     }
 
     public function testSetMapFieldsWithStringFieldNames(): void

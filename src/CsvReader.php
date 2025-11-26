@@ -143,15 +143,15 @@ class CsvReader
         // Reset pointer position
         $this->seekLine($headerRow);
 
-        $columns = $this->getNextLine();
+        $columns = $this->getNextLine() ?: [];
+
+        $columns = array_filter(
+            $columns,
+            fn($r) => $r !== '' && $r !== null,
+        );
 
         // Ignore the empty header line
         if (empty($columns)) {
-            return $this;
-        }
-
-        // Ignore lines with less than 2 columns
-        if (count($columns) < 2) {
             return $this;
         }
 
@@ -317,17 +317,15 @@ class CsvReader
 
         // Convert empty values to null
         $allEmpty = true;
-        $columns = array_map(
-            function ($r) use (&$allEmpty) {
-                if ($r === '' || $r === null) {
-                    return null;
-                }
 
-                $allEmpty = false;
-                return $r;
-            },
-            $columns
-        );
+        // ⚡️ Do not user array_map, it's slower than foreach
+        foreach ($columns as &$column) {
+            if ($column === '') {
+                $column = null;
+            }
+
+            $allEmpty = false;
+        }
 
         // Detect empty lines
         if ($allEmpty) {
@@ -428,9 +426,9 @@ class CsvReader
     /**
      * Read CSV line.
      *
-     * @return array|false|null
+     * @return array|false
      */
-    protected function getNextLine(): array|false|null
+    protected function getNextLine(): array|false
     {
         return fgetcsv($this->fp, 0, $this->delimiter, $this->enclosureChar, $this->escapeChar);
     }
