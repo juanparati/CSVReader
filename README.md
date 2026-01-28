@@ -30,10 +30,34 @@ composer require juanparati/csvreader
 - Full UTF support.
 - BOM support.
 - Lightweight library without external dependencies (Except PHPUnit for testing).
+- CSV format auto-detection (delimiter, enclosure, escape character, charset).
+
 
 ## Usage
 
-### Read CSV file and infer column mapping
+### Infer CSV format automatically and open file
+
+```PHP
+/**
+ * Example CSV file:
+ * 
+ * name|price
+ * John|10.50
+ * Mary|20.00
+ * 
+ */
+
+// Open a CSV file with inferred parameters
+$csv = new \Juanparati\CsvReader\CsvReader::open('file.csv');
+
+// Extract rows sequentially
+while ($row = $csv->read())
+{
+    ...         
+}
+```
+
+### Read CSV file with custom parameters
 
 ```PHP
 /**
