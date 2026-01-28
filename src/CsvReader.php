@@ -118,6 +118,35 @@ class CsvReader
 
 
     /**
+     * Factory method that infers the CSV format from the file and open it.
+     *
+     * @param string $file
+     * @param string $excludeField
+     * @param array $streamFilters
+     * @return CsvReader
+     * @throws CsvFileException
+     */
+    public static function open(
+        string $file,
+        string $excludeField = 'exclude',
+        array $streamFilters = []
+    ): CsvReader
+    {
+        $csvDetect = (new CsvAutoDetector($file))->detect();
+
+        return new static(
+            $file,
+            $csvDetect['delimiter'],
+            $csvDetect['enclosure'],
+            $csvDetect['charset'],
+            $csvDetect['escapeChar'],
+            $excludeField,
+            $streamFilters
+        );
+    }
+
+
+    /**
      * Destructor.
      */
     public function __destruct()
@@ -414,7 +443,7 @@ class CsvReader
     /**
      * Get encoding information and file stats.
      *
-     * @return array<encoding:array, file:array>
+     * @return array[encoding:array,file:array]
      */
     public function info(): array
     {
