@@ -192,16 +192,17 @@ class CsvAutoDetectorTest extends TestCase
         $this->assertEquals(';', $delimiter);
     }
 
-    public function testDelimiterDetectorThrowsOnLowConfidence(): void
+    public function testDelimiterDetectorWithSingleColumn(): void
     {
         $content = "single column data\nmore data\neven more\n";
         file_put_contents($this->tempFilePath, $content);
 
-        $this->expectException(CsvFileException::class);
-        $this->expectExceptionMessageMatches('/Unable to detect delimiter/');
+        $detector = new DelimiterDetector($this->tempFilePath);
+        $delimiter = $detector->detect();
 
-        $detector = new DelimiterDetector($this->tempFilePath, minConfidence: 70);
-        $detector->detect();
+        // Single column CSV should detect a delimiter with neutral confidence
+        $this->assertIsString($delimiter);
+        $this->assertEquals(50, $detector->getConfidence());
     }
 
     public function testDelimiterDetectorGetAllScores(): void

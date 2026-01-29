@@ -84,23 +84,10 @@ class DelimiterDetector
         $this->scores = $this->analyzeDelimiters();
 
         if (empty($this->scores)) {
-            throw new CsvFileException("Unable to detect delimiter: No valid delimiters found");
-        }
-
-        // Get the highest scoring delimiter
-        $bestDelimiter = array_key_first($this->scores);
-        $bestScore = $this->scores[$bestDelimiter];
-
-        // Check if confidence meets threshold
-        if ($bestScore['confidence'] < $this->minConfidence) {
-            throw new CsvFileException(
-                sprintf(
-                    "Unable to detect delimiter with confidence >= %d%% (best: '%s' with %d%%)",
-                    $this->minConfidence,
-                    $this->getDelimiterName($bestDelimiter),
-                    $bestScore['confidence']
-                )
-            );
+            // In case that delimiter is not found, default to semicolon
+            $bestDelimiter = CsvReader::DELIMITER_SEMICOLON;
+        } else {
+            $bestDelimiter = array_key_first($this->scores);
         }
 
         return $bestDelimiter;
@@ -177,9 +164,16 @@ class DelimiterDetector
         // Calculate consistency score (low standard deviation is good)
         $avgCount = $this->mean($counts);
 
-        // If delimiter never appears, it's not a valid candidate
+        // If delimiter never appears, it could be a single-column CSV
+        // Return a neutral score for this case
         if ($avgCount === 0.0) {
-            return null;
+            return [
+                'score' => 0.5,
+                'consistency' => 1.0,
+                'frequency' => 0.0,
+                'universal' => 1.0,
+                'confidence' => 50,
+            ];
         }
 
         $stdDev = $this->standardDeviation($counts);

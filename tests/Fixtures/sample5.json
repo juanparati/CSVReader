@@ -1,0 +1,27 @@
+{
+  "col_delimiter": ";",
+  "head_start": 0,
+  "read_from": 0,
+  "charset": "UTF-8",
+  "text_delimiter": "~",
+  "decimal_sep": ".",
+  "escape_char": "\\",
+  "fields": {
+    "column1": {
+      "class": "Juanparati\\CsvReader\\FieldMaps\\CsvFieldAuto",
+      "srcField": 0
+    }
+  },
+  "tests": {
+    "first": {
+      "column1": "foo1"
+    },
+    "last": {
+      "column1": "foo4"
+    },
+    "line": {
+      "_num": 2,
+      "column1": "foo3"
+    }
+  }
+}

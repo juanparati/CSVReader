@@ -214,6 +214,7 @@ class EnclosureDetector
         // Check if delimiters appear unenclosed (suggesting no enclosure is needed)
         $unenclosedDelimiters = 0;
         $totalLines = 0;
+        $linesWithoutQuotes = 0;
 
         foreach ($this->sampleLines as $line) {
             if (trim($line) === '') {
@@ -221,6 +222,11 @@ class EnclosureDetector
             }
 
             $totalLines++;
+
+            // Count lines without any enclosure characters
+            if (strpos($line, '"') === false && strpos($line, '~') === false) {
+                $linesWithoutQuotes++;
+            }
 
             // If line contains delimiter and no quotes/tildes, it's likely unenclosed
             if (
@@ -232,7 +238,12 @@ class EnclosureDetector
             }
         }
 
-        $score = $totalLines > 0 ? $unenclosedDelimiters / $totalLines : 0.5;
+        // For single-column CSVs (no delimiters), use the absence of quotes as indicator
+        if ($unenclosedDelimiters === 0 && $totalLines > 0) {
+            $score = $linesWithoutQuotes / $totalLines;
+        } else {
+            $score = $totalLines > 0 ? $unenclosedDelimiters / $totalLines : 0.5;
+        }
 
         return [
             'score' => $score,
