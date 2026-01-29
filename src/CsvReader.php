@@ -113,6 +113,12 @@ class CsvReader
         // For UTF-16/UTF-32, we need to apply a stream filter for proper conversion
         if ($this->encodingInfo['charset'] !== static::BASE_CHARSET) {
             $this->applyUTFStreamFilter();
+        } else {
+            // For UTF-8, reset to beginning and skip BOM if present
+            rewind($this->fp);
+            if ($this->encodingInfo['bom_length'] > 0) {
+                fseek($this->fp, $this->encodingInfo['bom_length']);
+            }
         }
     }
 
@@ -302,12 +308,11 @@ class CsvReader
 
     /**
      * Read CSV data as a generator for memory-efficient processing.
-     * Use this method instead of read() for large CSV files.
      * This method yields rows one at a time, maintaining a low memory footprint.
      *
      * Example usage:
      * ```php
-     * foreach ($csv->readMore() as $row) {
+     * foreach ($csv->read() as $row) {
      *     // Process row
      * }
      * ```
@@ -365,7 +370,7 @@ class CsvReader
         $from = [];
 
         if (empty($this->fieldMaps)) {
-            $from[] = $columns;
+            $from = $columns;
         } else {
             foreach ($this->fieldMaps as $k => $columnMap) {
 

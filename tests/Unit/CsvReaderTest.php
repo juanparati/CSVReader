@@ -13,13 +13,11 @@ use PHPUnit\Framework\TestCase;
 
 class CsvReaderTest extends TestCase
 {
-    private string $fixturesPath;
     private string $tempFilePath;
 
     protected function setUp(): void
     {
         parent::setUp();
-        $this->fixturesPath = __DIR__ . '/../Fixtures/';
         $this->tempFilePath = sys_get_temp_dir() . '/test_csv_' . uniqid() . '.csv';
     }
 
@@ -56,7 +54,7 @@ class CsvReaderTest extends TestCase
         $line = $reader->readLine();
 
         $this->assertIsArray($line);
-        $this->assertEquals([['1', '2', '3']], $line);
+        $this->assertEquals(['1', '2', '3'], $line);
     }
 
     public function testReadLineReturnsFalseAtEndOfFile(): void
@@ -234,18 +232,6 @@ class CsvReaderTest extends TestCase
         $this->assertEquals(1, $emptyCount);
     }
 
-    /*
-    public function testSeekLinePositionsToCorrectLine(): void
-    {
-        file_put_contents($this->tempFilePath, "line0\nline1\nline2\nline3\n");
-        $reader = new CsvReader($this->tempFilePath, ',');
-
-        $this->assertTrue($reader->seekLine(2));
-
-        $line = $reader->readLine();
-        $this->assertEquals([['line2']], $line);
-    }
-*/
     public function testSeekLineReturnsFalseForInvalidLine(): void
     {
         file_put_contents($this->tempFilePath, "line0\nline1\n");
@@ -264,7 +250,7 @@ class CsvReaderTest extends TestCase
         $line = $reader->readLine();
 
         // Should read the header without BOM
-        $this->assertEquals([['name', 'age']], $line);
+        $this->assertEquals(['name', 'age'], $line);
     }
 
     public function testTellPositionReturnsFilePosition(): void
@@ -345,53 +331,6 @@ class CsvReaderTest extends TestCase
         $reader->importFieldMaps(['bad_field' => ['no_class' => 'value']]);
     }
 
-    /*
-    public function testReadLineWithExcludeField(): void
-    {
-        file_put_contents($this->tempFilePath, "name,status\nJohn,active\nJane,excluded\n");
-        $reader = new CsvReader($this->tempFilePath, ',', '"', null, '\\', 'is_excluded');
-
-        $fields = [
-            'name' => new CsvFieldString('name'),
-            'status' => (new CsvFieldString('status'))->setExclusionRule('excluded')
-        ];
-
-        $reader->setMapFields($fields, 0);
-        $reader->seekLine(1);
-
-        $row1 = $reader->readLine();
-        $this->assertArrayNotHasKey('is_excluded', $row1);
-
-        $row2 = $reader->readLine();
-        $this->assertArrayHasKey('is_excluded', $row2);
-        $this->assertTrue($row2['is_excluded']);
-    }
-    */
-
-    /*
-    public function testReadLineWithFilteredValue(): void
-    {
-        file_put_contents($this->tempFilePath, "name,status\nJohn,active\nJane,filtered\nBob,active\n");
-        $reader = new CsvReader($this->tempFilePath, ',');
-
-        $fields = [
-            'name' => new CsvFieldString('name'),
-            'status' => (new CsvFieldString('status'))->setFilterRule('filtered')
-        ];
-
-        $reader->setMapFields($fields, 0);
-        $reader->seekLine(1);
-
-        $row1 = $reader->readLine();
-        $this->assertEquals('John', $row1['name']);
-
-        $row2 = $reader->readLine();
-        $this->assertFalse($row2); // Filtered row
-
-        $row3 = $reader->readLine();
-        $this->assertEquals('Bob', $row3['name']);
-    }
-*/
     public function testDifferentDelimiters(): void
     {
         // Semicolon
@@ -399,21 +338,21 @@ class CsvReaderTest extends TestCase
         $reader = new CsvReader($this->tempFilePath, CsvReader::DELIMITER_SEMICOLON);
         $reader->seekLine(1);
         $line = $reader->readLine();
-        $this->assertEquals([['1', '2', '3']], $line);
+        $this->assertEquals(['1', '2', '3'], $line);
 
         // Pipe
         file_put_contents($this->tempFilePath, "a|b|c\n1|2|3\n");
         $reader = new CsvReader($this->tempFilePath, CsvReader::DELIMITER_PIPE);
         $reader->seekLine(1);
         $line = $reader->readLine();
-        $this->assertEquals([['1', '2', '3']], $line);
+        $this->assertEquals(['1', '2', '3'], $line);
 
         // Tab
         file_put_contents($this->tempFilePath, "a\tb\tc\n1\t2\t3\n");
         $reader = new CsvReader($this->tempFilePath, CsvReader::DELIMITER_TAB);
         $reader->seekLine(1);
         $line = $reader->readLine();
-        $this->assertEquals([['1', '2', '3']], $line);
+        $this->assertEquals(['1', '2', '3'], $line);
     }
 
     public function testDifferentEnclosures(): void
@@ -423,7 +362,7 @@ class CsvReaderTest extends TestCase
         $reader->seekLine(1);
         $line = $reader->readLine();
 
-        $this->assertEquals([['1', '2', '3']], $line);
+        $this->assertEquals(['1', '2', '3'], $line);
     }
 
     public function testEnclosureHandlesEmbeddedDelimiters(): void
@@ -433,7 +372,7 @@ class CsvReaderTest extends TestCase
         $reader->seekLine(1);
         $line = $reader->readLine();
 
-        $this->assertEquals([['1,2', '3', '4']], $line);
+        $this->assertEquals(['1,2', '3', '4'], $line);
     }
 
     public function testCharsetCanBeEnforced(): void
@@ -446,5 +385,24 @@ class CsvReaderTest extends TestCase
         $info = $reader->info();
 
         $this->assertEquals('ISO-8859-1', $info['encoding']['charset']);
+    }
+
+    public function testFileWithoutDelimiters(): void
+    {
+        $csv = CsvReader::open(__DIR__ . '/../Fixtures/sample4.csv');
+
+        $row = $csv->readLine();
+
+        $this->assertEquals(['foo1'], $row);
+    }
+
+
+    public function testFileWithoutDelimitersAndEnclosure(): void
+    {
+        $csv = CsvReader::open(__DIR__ . '/../Fixtures/sample5.csv');
+
+        foreach ($csv->read(0) as $k => $row) {
+            $this->assertEquals(['foo' . ($k + 1), null], $row);
+        }
     }
 }
